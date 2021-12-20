@@ -2,6 +2,7 @@ package com.example.weatherapp
 
 import android.media.Image
 import android.util.Log
+import androidx.collection.arraySetOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -41,51 +42,64 @@ class MainActivityViewModel: ViewModel() {
     private fun loadCities() {
         // Do an asynchronous operation to fetch users.
         GlobalScope.launch {
-            val c1 = City("New York", 2459115)
-            val c2 = City("Tokyo", 1118370)
+            val citiesMap = mapOf<String, Int>(
+                "New York" to 2459115,
+                "Tokyo" to 1118370,
+                "Madrid" to 766273,
+                "Lisbon" to 742676,
+                "Munich" to 676757,
+                "Toronto" to 4118,
+                "Paris" to 615702,
+                "New Delhi" to 2295019,
+                "Los Angeles" to 2487956,
+                "Berlin" to 638242
+                )
 
-            citiesList.add(c1)
-            citiesList.add(c2)
-
-            currentCity = c1
+            for (cityEntry in citiesMap){
+                val tempCity = City(cityEntry.key, cityEntry.value)
+                citiesList.add(tempCity)
+            }
+            currentCity = citiesList[0]
 
             cities.postValue(citiesList)
         }
     }
 
     private fun loadForecastData(){
-        GlobalScope.launch {
-            val apiResponse = URL("https://www.metaweather.com/api/location/${currentCity?.id}/").readText()
-            val json = JSONObject(apiResponse)
+        if (currentCity != null){
+            GlobalScope.launch {
+                val apiResponse = URL("https://www.metaweather.com/api/location/${currentCity?.id}/").readText()
+                val json = JSONObject(apiResponse)
 
-            val forecast = json.getJSONArray("consolidated_weather")
+                val forecast = json.getJSONArray("consolidated_weather")
 
-            forecastData.clear()
+                forecastData.clear()
 
-            for (f in 0 until forecast.length()){
-                val day = forecast.getJSONObject(f)
+                for (f in 0 until forecast.length()){
+                    val day = forecast.getJSONObject(f)
 
-                val dayData = ConsolidatedWeather(
-                    id = day.getLong("id"),
-                    applicableDate = day.get("applicable_date") as String,
-                    weatherStateName = day.getString("weather_state_name"),
-                    weatherStateAbbr = day.getString("weather_state_abbr"),
-                    windSpeed = day.getDouble("wind_speed"),
-                    windDirection = day.getDouble("wind_direction"),
-                    windDirectionCompass = day.getString("wind_direction_compass"),
-                    minTemp = day.getInt("min_temp"),
-                    maxTemp = day.getInt("max_temp"),
-                    theTemp = day.getInt("the_temp"),
-                    airPressure = day.getDouble("air_pressure"),
-                    humidity = day.getDouble("humidity"),
-                    visibility = day.getDouble("visibility"),
-                    predictability = day.getInt("predictability")
-                )
+                    val dayData = ConsolidatedWeather(
+                        id = day.getLong("id"),
+                        applicableDate = day.get("applicable_date") as String,
+                        weatherStateName = day.getString("weather_state_name"),
+                        weatherStateAbbr = day.getString("weather_state_abbr"),
+                        windSpeed = day.getDouble("wind_speed"),
+                        windDirection = day.getDouble("wind_direction"),
+                        windDirectionCompass = day.getString("wind_direction_compass"),
+                        minTemp = day.getInt("min_temp"),
+                        maxTemp = day.getInt("max_temp"),
+                        theTemp = day.getInt("the_temp"),
+                        airPressure = day.getDouble("air_pressure"),
+                        humidity = day.getDouble("humidity"),
+                        visibility = day.getDouble("visibility"),
+                        predictability = day.getInt("predictability")
+                    )
 
-                forecastData.add(dayData)
+                    forecastData.add(dayData)
+                }
+
+                fullForecast.postValue(forecastData)
             }
-
-            fullForecast.postValue(forecastData)
         }
     }
 
