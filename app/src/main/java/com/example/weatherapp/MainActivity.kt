@@ -10,7 +10,9 @@ import com.example.weatherapp.databinding.ActivityMainBinding
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener{
     private lateinit var binding: ActivityMainBinding
@@ -53,7 +55,16 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener{
                     dateTitle.text = day.applicableDate?.replace('-', '/') ?: "null"
 
                     val weatherStateIcon = ImageView(this)
-                    Picasso.get().load("https://www.metaweather.com/static/img/weather/png/64/${day.weatherStateAbbr}.png").into(weatherStateIcon)
+                    Picasso.get().load("https://www.metaweather.com/static/img/weather/png/64/${day.weatherStateAbbr}.png").into(weatherStateIcon, object: Callback {
+                        override fun onSuccess(){
+                            binding.temperatures.visibility = View.VISIBLE
+                            binding.weatherLocationTitle.visibility = View.VISIBLE
+                        }
+
+                        override fun onError(e: Exception?) {
+
+                        }
+                    })
 
                     val theTemp = TextView(this)
                     val tempText = "${day.theTemp}°C"
@@ -100,7 +111,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener{
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-        Glide.with(this).load(R.drawable.loading).into(binding.todaysWeatherIcon);
+        Glide.with(this).load(R.drawable.loading).into(binding.todaysWeatherIcon)
+        binding.temperatures.visibility = View.GONE
+        binding.weatherLocationTitle.visibility = View.GONE
 
         val selectedCity = parent?.getItemAtPosition(pos)
         if (selectedCity != null){

@@ -50,7 +50,7 @@ class MainActivityViewModel: ViewModel() {
                 "Munich" to 676757,
                 "Toronto" to 4118,
                 "Paris" to 615702,
-                "New Delhi" to 2295019,
+                "New Delhi" to 28743736,
                 "Los Angeles" to 2487956,
                 "Berlin" to 638242
                 )
