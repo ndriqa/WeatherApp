@@ -1,21 +1,12 @@
 package com.example.weatherapp
 
-import android.media.Image
-import android.util.Log
-import androidx.collection.arraySetOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import java.net.URL
-import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivityViewModel: ViewModel() {
     val citiesList = mutableListOf<City>()
@@ -42,7 +33,7 @@ class MainActivityViewModel: ViewModel() {
     private fun loadCities() {
         // Do an asynchronous operation to fetch users.
         GlobalScope.launch {
-            val citiesMap = mapOf<String, Int>(
+            val citiesMap = mapOf(
                 "New York" to 2459115,
                 "Tokyo" to 1118370,
                 "Madrid" to 766273,
@@ -70,7 +61,6 @@ class MainActivityViewModel: ViewModel() {
             GlobalScope.launch {
                 val apiResponse = URL("https://www.metaweather.com/api/location/${currentCity?.id}/").readText()
                 val json = JSONObject(apiResponse)
-
                 val forecast = json.getJSONArray("consolidated_weather")
 
                 forecastData.clear()
@@ -135,8 +125,6 @@ data class ConsolidatedWeather(
     val visibility: Double?,
     val predictability: Int?
 ){
-    lateinit var icon: Image
-
     override fun toString(): String {
         return weatherStateAbbr ?: "null"
     }

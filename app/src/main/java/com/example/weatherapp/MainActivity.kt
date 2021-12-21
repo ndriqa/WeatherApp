@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener{
                         override fun onSuccess(){
                             binding.temperatures.visibility = View.VISIBLE
                             binding.weatherLocationTitle.visibility = View.VISIBLE
+                            binding.fullForecast.visibility = View.VISIBLE
                         }
 
                         override fun onError(e: Exception?) {
@@ -114,12 +115,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener{
         Glide.with(this).load(R.drawable.loading).into(binding.todaysWeatherIcon)
         binding.temperatures.visibility = View.GONE
         binding.weatherLocationTitle.visibility = View.GONE
+        binding.fullForecast.visibility = View.GONE
 
         val selectedCity = parent?.getItemAtPosition(pos)
         if (selectedCity != null){
             model.setCurrentCity(selectedCity.toString())
         }
-        Toast.makeText(applicationContext, "${model.currentCity}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
